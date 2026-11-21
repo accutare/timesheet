@@ -1,0 +1,4 @@
+# Dados reais dos timesheets (não versionar)
+*.csv
+dados/
+Painel*.html
