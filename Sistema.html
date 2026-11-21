@@ -226,6 +226,7 @@ function sum(a,f){let s=0;for(const x of a)s+=f(x);return s}
 function group(a,f){const m=new Map();for(const x of a){const k=f(x);if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return m}
 const SERV_PT = {'Client Contact':'Contato com cliente','Company Secretarial':'Secretariado (Companies House)','Invoicing & Payments':'Invoices e pagamentos','Reports':'Relatórios','Other Client Work':'Outros (cliente)','Admin':'Admin interno','Training':'Treinamento','Internal Meeting':'Reunião interna'};
 const sv = s => SERV_PT[s]||s;
+const NOCLIENT = 'Vários clientes (sem nome)';
 
 const D = DATA;
 const E = D.rows.map(r=>({staff:D.staff[r[0]],date:r[1],month:r[1].slice(0,7),client:D.clients[r[2]],service:D.services[r[3]],hours:r[4],kind:r[5]==='c'?'client':'internal',desc:r[6]||''}));
@@ -290,13 +291,13 @@ function renderGeral(){
   const agg=f=>[...group(cl,f)].map(([k,v])=>[k,sum(v,metric)]);
   donut('ch-serv',topN(agg(e=>sv(e.service)),6),m);
   donut('ch-pie-staff',topN(agg(e=>e.staff),6),m);
-  donut('ch-pie-client',topN(agg(e=>e.client),6),m);
+  donut('ch-pie-client',topN(agg(e=>e.client).filter(p=>p[0]!==NOCLIENT),6),m);
   document.getElementById('pie-staff-title').textContent = m?'Valor gerado por pessoa':'Horas em clientes por pessoa';
   document.getElementById('serv-hint').textContent = m?'Valor gerado no período':'Horas em clientes no período';
   document.getElementById('pie-client-hint').textContent = m?'Participação no valor gerado':'Participação nas horas de clientes';
 
   const ps=[...group(cur,e=>e.staff)].map(([k,v])=>({k,...stats(v)})).filter(s=>s.hours>=10);
-  const cs=[...group(cl,e=>e.client)].map(([k,v])=>({k,...stats(v),n:new Set(v.map(e=>e.staff)).size}));
+  const cs=[...group(cl.filter(e=>e.client!==NOCLIENT),e=>e.client)].map(([k,v])=>({k,...stats(v),n:new Set(v.map(e=>e.staff)).size}));
   const best=ps.slice().sort((a,b)=>b.util-a.util)[0], worst=ps.slice().sort((a,b)=>a.util-b.util)[0];
   const topC=cs.slice().sort((a,b)=>b.hours-a.hours)[0], shared=cs.slice().sort((a,b)=>b.n-a.n||b.hours-a.hours)[0];
   const row=(t,n,v,p)=>`<tr class="pick" data-go="${p}" data-k="${esc(n)}"><td>${t}</td><td class="name l">${esc(n)}</td><td>${v}</td></tr>`;
