@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: barra superior com período + abas; conteúdo em grade de cartões; resumo antes do detalhe. */
+/* Layout: barra superior com período, idioma e abas; conteúdo em grade de cartões; resumo antes do detalhe. */
 :root{
   --bg:#f3f5f4; --surface:#ffffff; --surface-2:#eef1f0; --line:#dde3e1;
   --fg:#17201d; --muted:#5d6b66; --accent:#0f6e5c; --accent-soft:#d8ece7;
@@ -40,12 +40,15 @@ label.ctl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:v
 select,input{font:inherit;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 .btn{font:inherit;font-weight:600;cursor:pointer;color:var(--accent);background:var(--accent-soft);border:1px solid transparent;border-radius:8px;padding:6px 12px}
 .btn:hover{border-color:var(--accent)}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lang button{font:inherit;font-size:.78rem;font-weight:700;letter-spacing:.04em;cursor:pointer;border:0;background:var(--surface-2);color:var(--muted);padding:6px 10px}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 nav.tabs{display:flex;gap:4px;overflow-x:auto}
 nav.tabs a{color:var(--muted);text-decoration:none;font-weight:600;padding:8px 12px;border-bottom:2px solid transparent;white-space:nowrap}
 nav.tabs a[aria-current="page"]{color:var(--fg);border-color:var(--accent)}
 nav.tabs a .count{font-family:var(--f-mono);font-size:.72rem;background:var(--bad);color:#fff;border-radius:99px;padding:0 6px;margin-left:4px}
-.banner{background:var(--accent-soft);color:var(--fg);border-radius:var(--r);padding:10px 14px;margin-top:16px;font-size:.85rem;display:flex;gap:6px 10px;flex-wrap:wrap;align-items:center}
+.banner{background:var(--accent-soft);color:var(--fg);border-radius:var(--r);padding:10px 14px;margin-top:16px;font-size:.85rem}
 .banner b{color:var(--accent)}
 .banner a{color:var(--accent);font-weight:600}
 main{padding-block:16px 48px}
@@ -109,22 +112,26 @@ td.name{font-weight:600}
   <div class="wrap">
     <div class="top-row">
       <div class="brand">
-        <h1>Painel Timesheets</h1>
+        <h1 data-i18n="appTitle">Painel Timesheets</h1>
         <span id="src-label"></span>
       </div>
       <div class="controls">
-        <label class="ctl" for="period">Período
+        <label class="ctl" for="period"><span data-i18n="period">Período</span>
           <select id="period"></select>
         </label>
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="pt" aria-pressed="true">PT</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
       </div>
     </div>
     <nav class="tabs" aria-label="Seções">
-      <a href="#geral">Visão geral</a>
-      <a href="#funcionarias">Equipe</a>
-      <a href="#clientes">Clientes</a>
-      <a href="#lancamentos">Lançamentos</a>
-      <a href="#precos">Preços</a>
-      <a href="#conferencia">Conferência <span class="count" id="alert-count"></span></a>
+      <a href="#geral" data-i18n="tabOverview">Visão geral</a>
+      <a href="#funcionarias" data-i18n="tabTeam">Equipe</a>
+      <a href="#clientes" data-i18n="tabClients">Clientes</a>
+      <a href="#lancamentos" data-i18n="tabEntries">Lançamentos</a>
+      <a href="#precos" data-i18n="tabRates">Preços</a>
+      <a href="#conferencia"><span data-i18n="tabChecks">Conferência</span> <span class="count" id="alert-count"></span></a>
     </nav>
   </div>
 </header>
@@ -135,18 +142,19 @@ td.name{font-weight:600}
     <section class="view" id="v-geral">
       <div class="kpis" id="kpis"></div>
       <div class="grid">
-        <div class="card s8"><h2>Horas por mês</h2><p class="hint">Horas em clientes e horas internas (e-mails, admin, reuniões). Nem todas as pessoas entregaram todos os meses; veja Conferência.</p><div class="chart tall"><canvas id="ch-evol"></canvas></div></div>
-        <div class="card s4"><h2>Por tipo de serviço</h2><p class="hint" id="serv-hint"></p><div class="chart tall"><canvas id="ch-serv"></canvas></div></div>
-        <div class="card s6"><h2 id="pie-staff-title"></h2><p class="hint">Participação de cada pessoa da equipe</p><div class="chart"><canvas id="ch-pie-staff"></canvas></div></div>
-        <div class="card s6"><h2>Clientes que mais consomem horas</h2><p class="hint" id="pie-client-hint"></p><div class="chart"><canvas id="ch-pie-client"></canvas></div></div>
-        <div class="card"><h2>Destaques do período</h2><div class="tbl-wrap" id="quick-rank"></div></div>
+        <div class="card s8"><h2 data-i18n="hoursByMonth">Horas por mês</h2><p class="hint" data-i18n="hoursByMonthHint"></p><div class="chart tall"><canvas id="ch-evol"></canvas></div></div>
+        <div class="card s4"><h2 data-i18n="byService">Por tipo de serviço</h2><p class="hint" id="serv-hint"></p><div class="chart tall"><canvas id="ch-serv"></canvas></div></div>
+        <div class="card"><h2 data-i18n="hvTitle"></h2><p class="hint" data-i18n="hvHint"></p><p class="banner" id="hv-empty" hidden></p><div class="chart tall"><canvas id="ch-hv"></canvas></div><div class="tbl-wrap" id="hv-table"></div><p class="foot" data-i18n="missingWarn"></p></div>
+        <div class="card s6"><h2 id="pie-staff-title"></h2><p class="hint" data-i18n="shareOfTeam"></p><div class="chart"><canvas id="ch-pie-staff"></canvas></div></div>
+        <div class="card s6"><h2 data-i18n="topClients">Clientes que mais consomem horas</h2><p class="hint" id="pie-client-hint"></p><div class="chart"><canvas id="ch-pie-client"></canvas></div></div>
+        <div class="card"><h2 data-i18n="highlights">Destaques do período</h2><div class="tbl-wrap" id="quick-rank"></div></div>
       </div>
     </section>
 
     <section class="view" id="v-funcionarias" hidden>
       <div class="card">
-        <h2>Rendimento por pessoa</h2>
-        <p class="hint">Aproveitamento = horas em clientes ÷ horas trabalhadas (sem almoço e férias). Clique numa linha para ver o detalhe.</p>
+        <h2 data-i18n="teamTitle">Rendimento por pessoa</h2>
+        <p class="hint" data-i18n="teamHint"></p>
         <div class="tbl-wrap"><table id="t-staff"></table></div>
       </div>
       <div class="grid" id="staff-detail"></div>
@@ -154,9 +162,9 @@ td.name{font-weight:600}
 
     <section class="view" id="v-clientes" hidden>
       <div class="card">
-        <h2>Horas por cliente</h2>
-        <div class="filters"><input type="search" id="client-q" placeholder="Buscar cliente" aria-label="Buscar cliente"></div>
-        <p class="hint">Clique numa linha para ver a evolução e quem trabalha no cliente.</p>
+        <h2 data-i18n="clientsTitle">Horas por cliente</h2>
+        <div class="filters"><input type="search" id="client-q" data-i18n-ph="searchClient" aria-label="Buscar cliente"></div>
+        <p class="hint" data-i18n="clientsHint"></p>
         <div class="tbl-wrap"><table id="t-client"></table></div>
         <p class="foot" id="client-foot"></p>
       </div>
@@ -165,12 +173,12 @@ td.name{font-weight:600}
 
     <section class="view" id="v-lancamentos" hidden>
       <div class="card">
-        <h2>Todos os lançamentos</h2>
+        <h2 data-i18n="entriesTitle">Todos os lançamentos</h2>
         <div class="filters">
           <select id="f-staff" aria-label="Pessoa"></select>
           <select id="f-client" aria-label="Cliente"></select>
-          <select id="f-kind" aria-label="Tipo"><option value="">Clientes e interno</option><option value="client">Só clientes</option><option value="internal">Só interno</option></select>
-          <input type="search" id="f-q" placeholder="Buscar na descrição" aria-label="Buscar na descrição">
+          <select id="f-kind" aria-label="Tipo"><option value="" data-i18n="kindAll"></option><option value="client" data-i18n="kindClient"></option><option value="internal" data-i18n="kindInternal"></option></select>
+          <input type="search" id="f-q" data-i18n-ph="searchDesc" aria-label="Buscar na descrição">
         </div>
         <div class="tbl-wrap"><table id="t-entries"></table></div>
         <p class="foot" id="entries-foot"></p>
@@ -179,22 +187,28 @@ td.name{font-weight:600}
 
     <section class="view" id="v-precos" hidden>
       <div class="card">
-        <h2>Preço por hora de cada serviço</h2>
-        <p class="hint">Os timesheets não têm valor por hora. Preencha o preço de cada serviço e o painel passa a mostrar quanto cada pessoa e cada cliente geram em £. Os valores ficam salvos neste navegador.</p>
+        <h2 data-i18n="ratesTitle">Preço por hora de cada serviço</h2>
+        <p class="hint" data-i18n="ratesHint"></p>
         <div class="rates" id="rates"></div>
-        <div class="filters"><button class="btn" id="rates-clear" type="button">Limpar preços</button><span class="foot" id="rates-msg"></span></div>
+        <div class="filters"><button class="btn" id="rates-clear" type="button" data-i18n="ratesClear">Limpar preços</button><span class="foot" id="rates-msg"></span></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="revTitle">Faturamento de cada mês</h2>
+        <p class="hint" data-i18n="revHint"></p>
+        <div class="rates" id="revenue"></div>
+        <span class="foot" id="rev-msg"></span>
       </div>
     </section>
 
     <section class="view" id="v-conferencia" hidden>
       <div class="card">
-        <h2>Entregas de timesheet por mês</h2>
-        <p class="hint">Preenchido: há lançamentos no mês. Tracejado: nenhum lançamento encontrado.</p>
+        <h2 data-i18n="coverageTitle">Entregas de timesheet por mês</h2>
+        <p class="hint" data-i18n="coverageHint"></p>
         <div class="tbl-wrap" id="coverage"></div>
       </div>
       <div class="card">
-        <h2>Conferência automática</h2>
-        <p class="hint">O que o sistema encontrou de estranho nos timesheets do período.</p>
+        <h2 data-i18n="checksTitle">Conferência automática</h2>
+        <p class="hint" data-i18n="checksHint"></p>
         <div class="alerts" id="alerts"></div>
       </div>
     </section>
@@ -209,25 +223,95 @@ const DATA = /*DATA*/null;
 <script>
 (function(){
 "use strict";
+/* ---------- idioma / language ---------- */
+const I18N = {
+pt:{appTitle:'Painel Timesheets',period:'Período',wholeYear:'Ano inteiro',tabOverview:'Visão geral',tabTeam:'Equipe',tabClients:'Clientes',tabEntries:'Lançamentos',tabRates:'Preços e faturamento',hvTitle:'Horas × faturamento',hvHint:'Barras: horas trabalhadas e faturamento de cada mês. A tabela mostra quanto entrou por hora trabalhada. Se esse valor cai, a equipe está trabalhando mais sem faturar na mesma proporção.',hvEmpty:'Ainda não há faturamento lançado. Preencha o faturamento de cada mês na aba <a href="#precos">Preços e faturamento</a>.',revTitle:'Faturamento de cada mês',revHint:'Valor total faturado (invoices emitidas) em cada mês. Usado no gráfico Horas × faturamento da Visão geral. Fica salvo neste navegador.',colMonth:'Mês',colRevenue:'Faturamento',colRevPerHour:'£ faturado por hora trabalhada',revenueLbl:'Faturamento',estValue:'Valor das horas pelos preços',missingWarn:'Meses com timesheets faltando aparecem com menos horas do que o real; veja Conferência.',tabChecks:'Conferência',
+ months:['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],months3:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+ srcLabel:'{p} pessoas · {n} lançamentos · {a} a {b}',
+ bannerHours:'<b>Dados reais</b> dos timesheets no Dropbox, lidos em {d}. Os timesheets não têm preço por hora, então o painel mostra horas. Para ver valores em £, preencha a aba <a href="#precos">Preços e faturamento</a>.',
+ bannerMoney:'<b>Dados reais</b> dos timesheets no Dropbox, lidos em {d}. Valores em £ calculados com os preços da aba <a href="#precos">Preços e faturamento</a>.',
+ hoursByMonth:'Horas por mês',hoursByMonthHint:'Horas em clientes e horas internas (e-mails, admin, reuniões). Nem todas as pessoas entregaram todos os meses; veja Conferência.',
+ byService:'Por tipo de serviço',shareOfTeam:'Participação de cada pessoa da equipe',topClients:'Clientes que mais consomem horas',highlights:'Destaques do período',
+ servHintH:'Horas em clientes no período',servHintM:'Valor gerado no período',pieStaffH:'Horas em clientes por pessoa',pieStaffM:'Valor gerado por pessoa',pieClientH:'Participação nas horas de clientes',pieClientM:'Participação no valor gerado',
+ kHours:'Horas trabalhadas',kClientH:'Horas em clientes',kUtil:'Aproveitamento',kClients:'Clientes atendidos',kValue:'Valor gerado',kPerHour:'Valor por hora trabalhada',
+ people:'{n} pessoas',internalH:'{h} internas',peopleLogged:'{n} pessoas lançaram horas',hoursTimesRate:'horas × preço do serviço',valueOverHours:'valor ÷ horas trabalhadas',vs:'vs',
+ inClients:'Em clientes',internal:'Interno',peopleWithEntries:'Pessoas com lançamento: {n}',others:'Outros',
+ hlBestUtil:'Maior aproveitamento',hlMostInternal:'Mais tempo interno',hlTopClient:'Cliente que mais consome horas',hlShared:'Cliente com mais gente envolvida',hlWho:'Quem',hlNumber:'Número',hlHighlight:'Destaque',
+ ofH:'{p} de {h}',internalPct:'{h} internas ({p})',nPeople:'{n} pessoas',
+ teamTitle:'Rendimento por pessoa',teamHint:'Aproveitamento = horas em clientes ÷ horas trabalhadas (sem almoço e férias). Clique numa linha para ver o detalhe.',
+ colName:'Nome',colHours:'Horas trabalhadas',colClientH:'Em clientes',colUtil:'Aproveitamento',colInternal:'Interno',colValue:'Valor gerado',colPerHour:'£/hora trabalhada',colClients:'Clientes',colDays:'Dias',
+ noData:'Sem dados no período.',daysLogged:'{n} dias com lançamento',pctOfTime:'{p} do tempo',perHourWorked:'{v} por hora trabalhada',
+ monthlyTrend:'Evolução mensal',whereHours:'Para onde vão as horas',hoursPerClient:'Horas por cliente no período',clientHoursPeriod:'Horas em clientes no período',internalTime:'Tempo interno',internalTimeHint:'O que entra como interno (sem cliente)',
+ clientsTitle:'Horas por cliente',searchClient:'Buscar cliente',clientsHint:'Clique numa linha para ver a evolução e quem trabalha no cliente.',
+ colClient:'Cliente',colH:'Horas',colMainService:'Serviço principal',colPeople:'Pessoas',colVsPrev:'vs mês anterior',noPrev:'sem horas no mês anterior',
+ clientsFoot:'{n} clientes com horas no período',found:' · {n} encontrados',
+ kHoursPeriod:'Horas no período',daysWork:'{n} dias com trabalho',kHoursYear:'Horas no ano',kPeople:'Pessoas envolvidas',
+ clientTrend:'Evolução do cliente',hoursPerMonth:'Horas por mês',whoWorks:'Quem trabalha neste cliente',hoursPerPerson:'Horas por pessoa no período',lastEntries:'Últimos lançamentos',
+ entriesTitle:'Todos os lançamentos',kindAll:'Clientes e interno',kindClient:'Só clientes',kindInternal:'Só interno',searchDesc:'Buscar na descrição',allTeam:'Toda a equipe',allClients:'Todos os clientes',
+ colDate:'Data',colPerson:'Pessoa',colService:'Serviço',colDesc:'Descrição',noEntries:'Nenhum lançamento.',entriesFoot:'{n} lançamentos · {h}',showingLast:' · mostrando os {n} mais recentes',
+ ratesTitle:'Preço por hora de cada serviço',ratesHint:'Os timesheets não têm valor por hora. Preencha o preço de cada serviço e o painel passa a mostrar quanto cada pessoa e cada cliente geram em £. Os valores ficam salvos neste navegador.',
+ ratesClear:'Limpar preços',inYear:'{h} no ano',ratesSaved:'Preços salvos neste navegador.',ratesNotSaved:'Este navegador não deixou salvar; os preços valem até fechar a página.',
+ coverageTitle:'Entregas de timesheet por mês',coverageHint:'Preenchido: há lançamentos no mês. Tracejado: nenhum lançamento encontrado.',noEntriesTip:' · sem lançamentos',
+ checksTitle:'Conferência automática',checksHint:'O que o sistema encontrou de estranho nos timesheets do período.',
+ aMissingT:'{s}: nenhum lançamento em {m}',aMissingD:'A pessoa já lançava horas antes deste mês. Confira se o timesheet está na pasta.',
+ aLongT:'{s} lançou {h} em {d}',aLongD:'Confira se não há linha duplicada ou horário digitado errado.',nothing:'Nada para conferir neste período.',
+ pMissing:'Falta',pCheck:'Conferir',pNote:'Nota',noClientName:'Vários clientes (sem nome)',
+ serv:{'Client Contact':'Contato com cliente','Company Secretarial':'Secretariado (Companies House)','Invoicing & Payments':'Invoices e pagamentos','Reports':'Relatórios','Other Client Work':'Outros (cliente)','Admin':'Admin interno','Training':'Treinamento','Internal Meeting':'Reunião interna'}},
+en:{appTitle:'Timesheet Dashboard',period:'Period',wholeYear:'Whole year',tabOverview:'Overview',tabTeam:'Team',tabClients:'Clients',tabEntries:'Entries',tabRates:'Rates & revenue',hvTitle:'Hours × revenue',hvHint:'Bars: hours worked and revenue for each month. The table shows how much came in per hour worked. If that figure drops, the team is working more without billing proportionally more.',hvEmpty:'No revenue entered yet. Enter each month\'s revenue in the <a href="#precos">Rates & revenue</a> tab.',revTitle:'Revenue per month',revHint:'Total invoiced in each month. Used in the Hours × revenue chart on the Overview. Saved in this browser.',colMonth:'Month',colRevenue:'Revenue',colRevPerHour:'£ billed per hour worked',revenueLbl:'Revenue',estValue:'Value of hours at rates',missingWarn:'Months with missing timesheets show fewer hours than were really worked; see Checks.',tabChecks:'Checks',
+ months:['January','February','March','April','May','June','July','August','September','October','November','December'],months3:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+ srcLabel:'{p} people · {n} entries · {a} to {b}',
+ bannerHours:'<b>Real data</b> from the Dropbox timesheets, read on {d}. The timesheets have no hourly rates, so the dashboard shows hours. To see £ values, fill in the <a href="#precos">Rates &amp; revenue</a> tab.',
+ bannerMoney:'<b>Real data</b> from the Dropbox timesheets, read on {d}. £ values use the rates in the <a href="#precos">Rates &amp; revenue</a> tab.',
+ hoursByMonth:'Hours per month',hoursByMonthHint:'Client hours and internal hours (emails, admin, meetings). Not everyone submitted every month; see Checks.',
+ byService:'By type of service',shareOfTeam:'Share of each team member',topClients:'Clients using the most hours',highlights:'Highlights for the period',
+ servHintH:'Client hours in the period',servHintM:'Value generated in the period',pieStaffH:'Client hours per person',pieStaffM:'Value generated per person',pieClientH:'Share of client hours',pieClientM:'Share of value generated',
+ kHours:'Hours worked',kClientH:'Client hours',kUtil:'Utilisation',kClients:'Clients served',kValue:'Value generated',kPerHour:'Value per hour worked',
+ people:'{n} people',internalH:'{h} internal',peopleLogged:'{n} people logged hours',hoursTimesRate:'hours × service rate',valueOverHours:'value ÷ hours worked',vs:'vs',
+ inClients:'Client work',internal:'Internal',peopleWithEntries:'People with entries: {n}',others:'Others',
+ hlBestUtil:'Highest utilisation',hlMostInternal:'Most internal time',hlTopClient:'Client using the most hours',hlShared:'Client with most people involved',hlWho:'Who',hlNumber:'Figure',hlHighlight:'Highlight',
+ ofH:'{p} of {h}',internalPct:'{h} internal ({p})',nPeople:'{n} people',
+ teamTitle:'Performance per person',teamHint:'Utilisation = client hours ÷ hours worked (excluding lunch and holidays). Click a row to see the detail.',
+ colName:'Name',colHours:'Hours worked',colClientH:'Client hours',colUtil:'Utilisation',colInternal:'Internal',colValue:'Value generated',colPerHour:'£/hour worked',colClients:'Clients',colDays:'Days',
+ noData:'No data for this period.',daysLogged:'{n} days with entries',pctOfTime:'{p} of the time',perHourWorked:'{v} per hour worked',
+ monthlyTrend:'Monthly trend',whereHours:'Where the hours go',hoursPerClient:'Hours per client in the period',clientHoursPeriod:'Client hours in the period',internalTime:'Internal time',internalTimeHint:'What is logged as internal (no client)',
+ clientsTitle:'Hours per client',searchClient:'Search client',clientsHint:'Click a row to see the trend and who works on the client.',
+ colClient:'Client',colH:'Hours',colMainService:'Main service',colPeople:'People',colVsPrev:'vs previous month',noPrev:'no hours last month',
+ clientsFoot:'{n} clients with hours in the period',found:' · {n} found',
+ kHoursPeriod:'Hours in the period',daysWork:'{n} days of work',kHoursYear:'Hours this year',kPeople:'People involved',
+ clientTrend:'Client trend',hoursPerMonth:'Hours per month',whoWorks:'Who works on this client',hoursPerPerson:'Hours per person in the period',lastEntries:'Latest entries',
+ entriesTitle:'All entries',kindAll:'Client and internal',kindClient:'Client only',kindInternal:'Internal only',searchDesc:'Search descriptions',allTeam:'Whole team',allClients:'All clients',
+ colDate:'Date',colPerson:'Person',colService:'Service',colDesc:'Description',noEntries:'No entries.',entriesFoot:'{n} entries · {h}',showingLast:' · showing the latest {n}',
+ ratesTitle:'Hourly rate for each service',ratesHint:'The timesheets have no hourly rates. Enter the rate for each service and the dashboard will show how much each person and each client generate in £. Rates are saved in this browser.',
+ ratesClear:'Clear rates',inYear:'{h} this year',ratesSaved:'Rates saved in this browser.',ratesNotSaved:'This browser did not allow saving; the rates last until the page is closed.',
+ coverageTitle:'Timesheets submitted per month',coverageHint:'Filled: entries exist for the month. Dashed: no entries found.',noEntriesTip:' · no entries',
+ checksTitle:'Automatic checks',checksHint:'Anything unusual the system found in the timesheets for the period.',
+ aMissingT:'{s}: no entries in {m}',aMissingD:'This person logged hours before this month. Check whether the timesheet is in the folder.',
+ aLongT:'{s} logged {h} on {d}',aLongD:'Check for a duplicated row or a mistyped time.',nothing:'Nothing to check for this period.',
+ pMissing:'Missing',pCheck:'Check',pNote:'Note',noClientName:'Various clients (unnamed)',serv:{}}
+};
+let LANG='pt';
+try{ const s=localStorage.getItem('ts-lang'); if(s==='en'||s==='pt') LANG=s; }catch(_){}
+const t=(k,v)=>{ let s=(I18N[LANG][k]??I18N.pt[k]??k); if(v) for(const [a,b] of Object.entries(v)) s=s.split('{'+a+'}').join(b); return s; };
+const loc=()=>LANG==='en'?'en-GB':'pt-BR';
+
 const GBP = new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0});
 const GBP2 = new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',minimumFractionDigits:2,maximumFractionDigits:2});
-const NUM1 = new Intl.NumberFormat('pt-BR',{maximumFractionDigits:1});
+let NUM1 = new Intl.NumberFormat(loc(),{maximumFractionDigits:1});
 const PCT = v => isFinite(v) ? Math.round(v*100)+'%' : '—';
 const money = v => GBP.format(v||0);
 const hrs = v => NUM1.format(v||0)+' h';
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const MES3 = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const mLabel = k => { const [y,m]=k.split('-'); return MES[+m-1]+' '+y; };
-const mShort = k => { const [y,m]=k.split('-'); return MES3[+m-1]+'/'+y.slice(2); };
+const mLabel = k => { const [y,m]=k.split('-'); return t('months')[+m-1]+' '+y; };
+const mShort = k => { const [y,m]=k.split('-'); return t('months3')[+m-1]+'/'+y.slice(2); };
 const dBR = d => d.split('-').reverse().join('/');
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function sum(a,f){let s=0;for(const x of a)s+=f(x);return s}
 function group(a,f){const m=new Map();for(const x of a){const k=f(x);if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return m}
-const SERV_PT = {'Client Contact':'Contato com cliente','Company Secretarial':'Secretariado (Companies House)','Invoicing & Payments':'Invoices e pagamentos','Reports':'Relatórios','Other Client Work':'Outros (cliente)','Admin':'Admin interno','Training':'Treinamento','Internal Meeting':'Reunião interna'};
-const sv = s => SERV_PT[s]||s;
+const sv = s => (I18N[LANG].serv||{})[s]||s;
 const NOCLIENT = 'Vários clientes (sem nome)';
+const cn = c => c===NOCLIENT ? t('noClientName') : c;
 
+/* ---------- dados ---------- */
 const D = DATA;
 const E = D.rows.map(r=>({staff:D.staff[r[0]],date:r[1],month:r[1].slice(0,7),client:D.clients[r[2]],service:D.services[r[3]],hours:r[4],kind:r[5]==='c'?'client':'internal',desc:r[6]||''}));
 const MONTHS = [...new Set(E.map(e=>e.month))].sort();
@@ -236,6 +320,10 @@ const CLIENT_SERVICES = [...new Set(E.filter(e=>e.kind==='client').map(e=>e.serv
 let RATES = {};
 try{ RATES = JSON.parse(localStorage.getItem('ts-rates')||'{}')||{} }catch(_){ RATES = {} }
 for(const [k,v] of Object.entries(D.rates||{})) if(!(k in RATES)) RATES[k]=v;
+let REV = {};
+try{ REV = JSON.parse(localStorage.getItem('ts-revenue')||'{}')||{} }catch(_){ REV = {} }
+for(const [k,v] of Object.entries(D.revenue||{})) if(!(k in REV)) REV[k]=v;
+const hasRev = () => Object.values(REV).some(v=>v>0);
 const hasRates = () => Object.values(RATES).some(v=>v>0);
 const rate = e => e.kind==='client' ? (+RATES[e.service]||0) : 0;
 const val = e => e.hours*rate(e);
@@ -253,59 +341,80 @@ function stats(list){
           clients:new Set(list.filter(e=>e.kind==='client').map(e=>e.client)).size, days:new Set(list.map(e=>e.date)).size};
 }
 
+/* ---------- gráficos ---------- */
 const palette = () => ['--c1','--c2','--c3','--c4','--c5','--c6','--c7'].map(css);
 function chartDefaults(){ Chart.defaults.font.family=css('--f-body')||'Inter'; Chart.defaults.color=css('--muted'); Chart.defaults.borderColor=css('--line'); }
 function mk(id,cfg){ if(charts[id]) charts[id].destroy(); const el=document.getElementById(id); if(!el) return; charts[id]=new Chart(el,cfg); }
-function topN(pairs,n){ const a=[...pairs].sort((x,y)=>y[1]-x[1]); if(a.length<=n) return a; return a.slice(0,n).concat([['Outros',sum(a.slice(n),x=>x[1])]]); }
+function topN(pairs,n){ const a=[...pairs].sort((x,y)=>y[1]-x[1]); if(a.length<=n) return a; return a.slice(0,n).concat([[t('others'),sum(a.slice(n),x=>x[1])]]); }
 function donut(id,pairs,isMoney){
-  const pal=palette();
-  mk(id,{type:'doughnut',data:{labels:pairs.map(p=>p[0]),datasets:[{data:pairs.map(p=>+p[1].toFixed(1)),backgroundColor:pairs.map((p,i)=>p[0]==='Outros'?pal[6]:pal[i%6]),borderColor:css('--surface'),borderWidth:2}]},
+  const pal=palette(), oth=t('others');
+  mk(id,{type:'doughnut',data:{labels:pairs.map(p=>p[0]),datasets:[{data:pairs.map(p=>+p[1].toFixed(1)),backgroundColor:pairs.map((p,i)=>p[0]===oth?pal[6]:pal[i%6]),borderColor:css('--surface'),borderWidth:2}]},
     options:{maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{boxWidth:10,boxHeight:10,padding:8}},
-      tooltip:{callbacks:{label:c=>{const t=sum(c.dataset.data,x=>x);return ' '+c.label+': '+(isMoney?money(c.raw):hrs(c.raw))+' ('+PCT(c.raw/t)+')'}}}}}});
+      tooltip:{callbacks:{label:c=>{const s=sum(c.dataset.data,x=>x);return ' '+c.label+': '+(isMoney?money(c.raw):hrs(c.raw))+' ('+PCT(c.raw/s)+')'}}}}}});
 }
 const hAxis = () => ({ticks:{callback:v=>v+' h'},grid:{color:css('--line')},beginAtZero:true});
 function hbar(id,pairs,color){ mk(id,{type:'bar',data:{labels:pairs.map(x=>x[0]),datasets:[{data:pairs.map(x=>+x[1].toFixed(1)),backgroundColor:color,borderRadius:4}]},
   options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+hrs(c.raw)}}},scales:{x:{grid:{color:css('--line')}},y:{grid:{display:false},ticks:{autoSkip:false}}}}}); }
 function stackedMonths(id,list){
   const pal=palette(), bym=group(list,e=>e.month), st=MONTHS.map(m=>stats(bym.get(m)||[]));
-  mk(id,{type:'bar',data:{labels:MONTHS.map(mShort),datasets:[{label:'Em clientes',data:st.map(s=>+s.clientH.toFixed(1)),backgroundColor:pal[0],borderRadius:4,stack:'h'},{label:'Interno',data:st.map(s=>+s.internalH.toFixed(1)),backgroundColor:pal[6],borderRadius:4,stack:'h'}]},
-    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:10,boxHeight:10}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+hrs(c.raw),footer:it=>{const m=MONTHS[it[0].dataIndex];return 'Pessoas com lançamento: '+new Set((bym.get(m)||[]).map(e=>e.staff)).size}}}},scales:{y:{...hAxis(),stacked:true},x:{stacked:true,grid:{display:false}}}}});
+  mk(id,{type:'bar',data:{labels:MONTHS.map(mShort),datasets:[{label:t('inClients'),data:st.map(s=>+s.clientH.toFixed(1)),backgroundColor:pal[0],borderRadius:4,stack:'h'},{label:t('internal'),data:st.map(s=>+s.internalH.toFixed(1)),backgroundColor:pal[6],borderRadius:4,stack:'h'}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{boxWidth:10,boxHeight:10}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+hrs(c.raw),footer:it=>{const m=MONTHS[it[0].dataIndex];return t('peopleWithEntries',{n:new Set((bym.get(m)||[]).map(e=>e.staff)).size})}}}},scales:{y:{...hAxis(),stacked:true},x:{stacked:true,grid:{display:false}}}}});
 }
 
+function renderHV(){
+  const pal=palette(), bym=group(E,e=>e.month), st=MONTHS.map(m=>stats(bym.get(m)||[]));
+  const rev=MONTHS.map(m=>+REV[m]||0);
+  document.getElementById('hv-empty').hidden=hasRev();
+  document.getElementById('hv-empty').innerHTML=t('hvEmpty');
+  const ds=[{type:'bar',label:t('kHours'),data:st.map(s=>+s.hours.toFixed(1)),backgroundColor:pal[6],borderRadius:4,yAxisID:'y',order:2},
+            {type:'bar',label:t('revenueLbl'),data:rev,backgroundColor:pal[0],borderRadius:4,yAxisID:'y1',order:2}];
+  if(hasRates()) ds.push({type:'line',label:t('estValue'),data:st.map(s=>Math.round(s.value)),borderColor:pal[2],backgroundColor:pal[2],tension:.3,yAxisID:'y1',order:1});
+  mk('ch-hv',{data:{labels:MONTHS.map(mShort),datasets:ds},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{boxWidth:10,boxHeight:10}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+(c.dataset.yAxisID==='y'?hrs(c.raw):money(c.raw)),footer:it=>{const i=it[0].dataIndex;return rev[i]&&st[i].hours?t('colRevPerHour')+': '+GBP2.format(rev[i]/st[i].hours):''}}}},
+    scales:{y:{...hAxis(),position:'left'},y1:{position:'right',beginAtZero:true,grid:{display:false},ticks:{callback:v=>'£'+(v>=1000?Math.round(v/1000)+'k':v)}},x:{grid:{display:false}}}}});
+  if(!hasRev()){ document.getElementById('hv-table').innerHTML=''; return; }
+  const rph=MONTHS.map((m,i)=>rev[i]&&st[i].hours?rev[i]/st[i].hours:NaN);
+  document.getElementById('hv-table').innerHTML=`<table><thead><tr><th>${t('colMonth')}</th><th>${t('kHours')}</th><th>${t('colRevenue')}</th><th>${t('colRevPerHour')}</th></tr></thead><tbody>`+
+    MONTHS.map((m,i)=>{const p=i?rph[i-1]:NaN, d=isFinite(rph[i])&&isFinite(p)?(rph[i]-p)/p:NaN;
+      return `<tr><td>${mLabel(m)}</td><td>${hrs(st[i].hours)}</td><td>${rev[i]?money(rev[i]):'—'}</td><td>${isFinite(rph[i])?GBP2.format(rph[i]):'—'} ${isFinite(d)?`<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${PCT(Math.abs(d))}</span>`:''}</td></tr>`}).join('')+'</tbody></table>';
+}
+
+/* ---------- telas ---------- */
 const kpi = (lbl,v,sub) => `<div class="kpi"><span class="lbl">${lbl}</span><span class="val">${v}</span><span class="sub">${sub||'&nbsp;'}</span></div>`;
-function delta(cur,prev){ if(!prev) return ''; const d=(cur-prev)/Math.abs(prev); return `<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${PCT(Math.abs(d))}</span> vs ${mShort(prevPeriod())}`; }
+function delta(cur,prev){ if(!prev) return ''; const d=(cur-prev)/Math.abs(prev); return `<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${PCT(Math.abs(d))}</span> ${t('vs')} ${mShort(prevPeriod())}`; }
 
 function renderGeral(){
   const cur=E.filter(inPeriod), S=stats(cur);
   const pp=prevPeriod(), P=pp?stats(E.filter(e=>e.month===pp)):null;
   const people=new Set(cur.map(e=>e.staff)).size;
-  let html = kpi('Horas trabalhadas',hrs(S.hours),P?delta(S.hours,P.hours):people+' pessoas') +
-    kpi('Horas em clientes',hrs(S.clientH),P?delta(S.clientH,P.clientH):'') +
-    kpi('Aproveitamento',PCT(S.util),hrs(S.internalH)+' internas') +
-    kpi('Clientes atendidos',S.clients,people+' pessoas lançaram horas');
-  if(hasRates()) html += kpi('Valor gerado',money(S.value),P?delta(S.value,P.value):'horas × preço do serviço') + kpi('Valor por hora trabalhada',GBP2.format(S.perHour),'valor ÷ horas trabalhadas');
+  let html = kpi(t('kHours'),hrs(S.hours),P?delta(S.hours,P.hours):t('people',{n:people})) +
+    kpi(t('kClientH'),hrs(S.clientH),P?delta(S.clientH,P.clientH):'') +
+    kpi(t('kUtil'),PCT(S.util),t('internalH',{h:hrs(S.internalH)})) +
+    kpi(t('kClients'),S.clients,t('peopleLogged',{n:people}));
+  if(hasRates()) html += kpi(t('kValue'),money(S.value),P?delta(S.value,P.value):t('hoursTimesRate')) + kpi(t('kPerHour'),GBP2.format(S.perHour),t('valueOverHours'));
   document.getElementById('kpis').innerHTML = html;
   stackedMonths('ch-evol',E);
+  renderHV();
 
   const cl=cur.filter(e=>e.kind==='client'), m=hasRates();
   const agg=f=>[...group(cl,f)].map(([k,v])=>[k,sum(v,metric)]);
   donut('ch-serv',topN(agg(e=>sv(e.service)),6),m);
   donut('ch-pie-staff',topN(agg(e=>e.staff),6),m);
   donut('ch-pie-client',topN(agg(e=>e.client).filter(p=>p[0]!==NOCLIENT),6),m);
-  document.getElementById('pie-staff-title').textContent = m?'Valor gerado por pessoa':'Horas em clientes por pessoa';
-  document.getElementById('serv-hint').textContent = m?'Valor gerado no período':'Horas em clientes no período';
-  document.getElementById('pie-client-hint').textContent = m?'Participação no valor gerado':'Participação nas horas de clientes';
+  document.getElementById('pie-staff-title').textContent = t(m?'pieStaffM':'pieStaffH');
+  document.getElementById('serv-hint').textContent = t(m?'servHintM':'servHintH');
+  document.getElementById('pie-client-hint').textContent = t(m?'pieClientM':'pieClientH');
 
   const ps=[...group(cur,e=>e.staff)].map(([k,v])=>({k,...stats(v)})).filter(s=>s.hours>=10);
   const cs=[...group(cl.filter(e=>e.client!==NOCLIENT),e=>e.client)].map(([k,v])=>({k,...stats(v),n:new Set(v.map(e=>e.staff)).size}));
   const best=ps.slice().sort((a,b)=>b.util-a.util)[0], worst=ps.slice().sort((a,b)=>a.util-b.util)[0];
   const topC=cs.slice().sort((a,b)=>b.hours-a.hours)[0], shared=cs.slice().sort((a,b)=>b.n-a.n||b.hours-a.hours)[0];
-  const row=(t,n,v,p)=>`<tr class="pick" data-go="${p}" data-k="${esc(n)}"><td>${t}</td><td class="name l">${esc(n)}</td><td>${v}</td></tr>`;
-  document.getElementById('quick-rank').innerHTML = `<table><thead><tr><th>Destaque</th><th class="l">Quem</th><th>Número</th></tr></thead><tbody>
-    ${best?row('<span class="pill good">Maior aproveitamento</span>',best.k,PCT(best.util)+' de '+hrs(best.hours),'funcionarias'):''}
-    ${worst&&worst!==best?row('<span class="pill warn">Mais tempo interno</span>',worst.k,hrs(worst.internalH)+' internas ('+PCT(1-worst.util)+')','funcionarias'):''}
-    ${topC?row('<span class="pill good">Cliente que mais consome horas</span>',topC.k,hrs(topC.hours)+(m?' · '+money(topC.value):''),'clientes'):''}
-    ${shared&&shared.n>1?row('<span class="pill muted">Cliente com mais gente envolvida</span>',shared.k,shared.n+' pessoas · '+hrs(shared.hours),'clientes'):''}
+  const row=(tag,n,v,p)=>`<tr class="pick" data-go="${p}" data-k="${esc(n)}"><td>${tag}</td><td class="name l">${esc(n)}</td><td>${v}</td></tr>`;
+  document.getElementById('quick-rank').innerHTML = `<table><thead><tr><th>${t('hlHighlight')}</th><th class="l">${t('hlWho')}</th><th>${t('hlNumber')}</th></tr></thead><tbody>
+    ${best?row(`<span class="pill good">${t('hlBestUtil')}</span>`,best.k,t('ofH',{p:PCT(best.util),h:hrs(best.hours)}),'funcionarias'):''}
+    ${worst&&worst!==best?row(`<span class="pill warn">${t('hlMostInternal')}</span>`,worst.k,t('internalPct',{h:hrs(worst.internalH),p:PCT(1-worst.util)}),'funcionarias'):''}
+    ${topC?row(`<span class="pill good">${t('hlTopClient')}</span>`,topC.k,hrs(topC.hours)+(m?' · '+money(topC.value):''),'clientes'):''}
+    ${shared&&shared.n>1?row(`<span class="pill muted">${t('hlShared')}</span>`,shared.k,t('nPeople',{n:shared.n})+' · '+hrs(shared.hours),'clientes'):''}
   </tbody></table>`;
   document.querySelectorAll('#quick-rank tr[data-go]').forEach(tr=>tr.onclick=()=>{ if(tr.dataset.go==='funcionarias') selStaff=tr.dataset.k; else selClient=tr.dataset.k; location.hash=tr.dataset.go; });
 }
@@ -313,11 +422,11 @@ function renderGeral(){
 function sortable(tableId,key,cols,rows,onPick,selected){
   const [sk,dir]=sortState[key];
   rows.sort((a,b)=>(typeof a[sk]==='string'?a[sk].localeCompare(b[sk]):((isFinite(a[sk])?a[sk]:-1)-(isFinite(b[sk])?b[sk]:-1)))*dir);
-  const t=document.getElementById(tableId);
-  t.innerHTML='<thead><tr>'+cols.map(c=>`<th data-sort="${c.k}" class="${c.l?'l ':''}${c.k===sk?(dir>0?'asc':'desc'):''}">${c.h}</th>`).join('')+'</tr></thead><tbody>'+
-    (rows.length?rows.map(r=>`<tr class="pick ${r.k===selected?'sel':''}" data-k="${esc(r.k)}">`+cols.map((c,i)=>`<td class="${i===0?'name ':''}${c.l?'l':''}">${c.f(r)}</td>`).join('')+'</tr>').join(''):`<tr><td colspan="${cols.length}" class="empty">Sem dados no período.</td></tr>`)+'</tbody>';
-  t.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;sortState[key]=[k,sk===k?-dir:(k==='k'||k==='main'?1:-1)];render();});
-  t.querySelectorAll('tbody tr[data-k]').forEach(tr=>tr.onclick=()=>onPick(tr.dataset.k));
+  const tb=document.getElementById(tableId);
+  tb.innerHTML='<thead><tr>'+cols.map(c=>`<th data-sort="${c.k}" class="${c.l?'l ':''}${c.k===sk?(dir>0?'asc':'desc'):''}">${c.h}</th>`).join('')+'</tr></thead><tbody>'+
+    (rows.length?rows.map(r=>`<tr class="pick ${r.k===selected?'sel':''}" data-k="${esc(r.k)}">`+cols.map((c,i)=>`<td class="${i===0?'name ':''}${c.l?'l':''}">${c.f(r)}</td>`).join('')+'</tr>').join(''):`<tr><td colspan="${cols.length}" class="empty">${t('noData')}</td></tr>`)+'</tbody>';
+  tb.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;sortState[key]=[k,sk===k?-dir:(k==='k'||k==='main'?1:-1)];render();});
+  tb.querySelectorAll('tbody tr[data-k]').forEach(tr=>tr.onclick=()=>onPick(tr.dataset.k));
 }
 const barCell = (v,max,txt) => `<span class="bar" style="width:${Math.max(2,Math.round(v/max*60))}px"></span>${txt}`;
 
@@ -326,26 +435,26 @@ function renderStaff(){
   const rows=[...group(cur,e=>e.staff)].map(([k,v])=>({k,...stats(v)}));
   if(!selStaff||!rows.some(r=>r.k===selStaff)) selStaff=rows.slice().sort((a,b)=>b.clientH-a.clientH)[0]?.k||null;
   const maxH=Math.max(1,...rows.map(r=>r.clientH)), maxV=Math.max(1,...rows.map(r=>r.value));
-  const cols=[{k:'k',h:'Nome',f:r=>esc(r.k)},{k:'hours',h:'Horas trabalhadas',f:r=>hrs(r.hours)},
-    {k:'clientH',h:'Em clientes',f:r=>barCell(r.clientH,maxH,hrs(r.clientH))},
-    {k:'util',h:'Aproveitamento',f:r=>`<span class="pill ${r.util>=.8?'good':r.util>=.65?'muted':'warn'}">${PCT(r.util)}</span>`},
-    {k:'internalH',h:'Interno',f:r=>hrs(r.internalH)}];
-  if(hasRates()) cols.push({k:'value',h:'Valor gerado',f:r=>barCell(r.value,maxV,money(r.value))},{k:'perHour',h:'£/hora trabalhada',f:r=>GBP2.format(r.perHour)});
-  cols.push({k:'clients',h:'Clientes',f:r=>r.clients},{k:'days',h:'Dias',f:r=>r.days});
+  const cols=[{k:'k',h:t('colName'),f:r=>esc(r.k)},{k:'hours',h:t('colHours'),f:r=>hrs(r.hours)},
+    {k:'clientH',h:t('colClientH'),f:r=>barCell(r.clientH,maxH,hrs(r.clientH))},
+    {k:'util',h:t('colUtil'),f:r=>`<span class="pill ${r.util>=.8?'good':r.util>=.65?'muted':'warn'}">${PCT(r.util)}</span>`},
+    {k:'internalH',h:t('colInternal'),f:r=>hrs(r.internalH)}];
+  if(hasRates()) cols.push({k:'value',h:t('colValue'),f:r=>barCell(r.value,maxV,money(r.value))},{k:'perHour',h:t('colPerHour'),f:r=>GBP2.format(r.perHour)});
+  cols.push({k:'clients',h:t('colClients'),f:r=>r.clients},{k:'days',h:t('colDays'),f:r=>r.days});
   sortable('t-staff','staff',cols,rows,k=>{selStaff=k;render()},selStaff);
 
   const box=document.getElementById('staff-detail');
   if(!selStaff){box.innerHTML='';return}
   const mine=E.filter(e=>e.staff===selStaff), mp=mine.filter(inPeriod), S=stats(mp);
-  box.innerHTML=`<div class="card"><div class="detail-head"><h2>${esc(selStaff)}</h2><span class="foot">${period==='all'?'Ano inteiro':mLabel(period)}</span></div>
-    <div class="kpis">${kpi('Horas trabalhadas',hrs(S.hours),S.days+' dias com lançamento')+kpi('Em clientes',hrs(S.clientH),PCT(S.util)+' do tempo')+kpi('Clientes atendidos',S.clients)+(hasRates()?kpi('Valor gerado',money(S.value),GBP2.format(S.perHour)+' por hora trabalhada'):'')}</div></div>
-    <div class="card s6"><h2>Evolução mensal</h2><div class="chart"><canvas id="ch-st-evol"></canvas></div></div>
-    <div class="card s6"><h2>Para onde vão as horas</h2><p class="hint">Horas por cliente no período</p><div class="chart"><canvas id="ch-st-cli"></canvas></div></div>
-    <div class="card s6"><h2>Por tipo de serviço</h2><p class="hint">Horas em clientes no período</p><div class="chart"><canvas id="ch-st-serv"></canvas></div></div>
-    <div class="card s6"><h2>Tempo interno</h2><p class="hint">O que entra como interno (sem cliente)</p><div class="chart"><canvas id="ch-st-int"></canvas></div></div>`;
+  box.innerHTML=`<div class="card"><div class="detail-head"><h2>${esc(selStaff)}</h2><span class="foot">${period==='all'?t('wholeYear'):mLabel(period)}</span></div>
+    <div class="kpis">${kpi(t('kHours'),hrs(S.hours),t('daysLogged',{n:S.days}))+kpi(t('kClientH'),hrs(S.clientH),t('pctOfTime',{p:PCT(S.util)}))+kpi(t('kClients'),S.clients)+(hasRates()?kpi(t('kValue'),money(S.value),t('perHourWorked',{v:GBP2.format(S.perHour)})):'')}</div></div>
+    <div class="card s6"><h2>${t('monthlyTrend')}</h2><div class="chart"><canvas id="ch-st-evol"></canvas></div></div>
+    <div class="card s6"><h2>${t('whereHours')}</h2><p class="hint">${t('hoursPerClient')}</p><div class="chart"><canvas id="ch-st-cli"></canvas></div></div>
+    <div class="card s6"><h2>${t('byService')}</h2><p class="hint">${t('clientHoursPeriod')}</p><div class="chart"><canvas id="ch-st-serv"></canvas></div></div>
+    <div class="card s6"><h2>${t('internalTime')}</h2><p class="hint">${t('internalTimeHint')}</p><div class="chart"><canvas id="ch-st-int"></canvas></div></div>`;
   const pal=palette(); stackedMonths('ch-st-evol',mine);
   const cl=mp.filter(e=>e.kind==='client');
-  hbar('ch-st-cli',topN([...group(cl,e=>e.client)].map(([k,v])=>[k,sum(v,e=>e.hours)]),8),pal[1]);
+  hbar('ch-st-cli',topN([...group(cl,e=>cn(e.client))].map(([k,v])=>[k,sum(v,e=>e.hours)]),8),pal[1]);
   donut('ch-st-serv',topN([...group(cl,e=>sv(e.service))].map(([k,v])=>[k,sum(v,e=>e.hours)]),6),false);
   hbar('ch-st-int',topN([...group(mp.filter(e=>e.kind!=='client'),e=>sv(e.service))].map(([k,v])=>[k,sum(v,e=>e.hours)]),6),pal[6]);
 }
@@ -357,79 +466,89 @@ function renderClients(){
   const prev=pp?new Map([...group(E.filter(e=>e.month===pp&&e.kind==='client'),e=>e.client)].map(([k,v])=>[k,sum(v,e=>e.hours)])):null;
   let rows=[...group(cur,e=>e.client)].map(([k,v])=>{const s=stats(v);return {k,...s,n:new Set(v.map(e=>e.staff)).size,main:topN([...group(v,e=>sv(e.service))].map(([a,b])=>[a,sum(b,e=>e.hours)]),1)[0][0],trend:prev&&prev.get(k)?(s.hours-prev.get(k))/prev.get(k):NaN}});
   const total=rows.length;
-  if(q) rows=rows.filter(r=>r.k.toLowerCase().includes(q));
-  if(!selClient||!rows.some(r=>r.k===selClient)) selClient=rows.slice().sort((a,b)=>b.hours-a.hours)[0]?.k||null;
+  if(q) rows=rows.filter(r=>cn(r.k).toLowerCase().includes(q));
+  if(!selClient||!rows.some(r=>r.k===selClient)) selClient=rows.filter(r=>r.k!==NOCLIENT).sort((a,b)=>b.hours-a.hours)[0]?.k||rows[0]?.k||null;
   const maxH=Math.max(1,...rows.map(r=>r.hours));
-  const cols=[{k:'k',h:'Cliente',f:r=>esc(r.k)},{k:'hours',h:'Horas',f:r=>barCell(r.hours,maxH,hrs(r.hours))}];
-  if(hasRates()) cols.push({k:'value',h:'Valor gerado',f:r=>money(r.value)});
-  cols.push({k:'main',h:'Serviço principal',l:true,f:r=>esc(r.main)},{k:'n',h:'Pessoas',f:r=>r.n},{k:'days',h:'Dias',f:r=>r.days});
-  if(pp) cols.push({k:'trend',h:'vs mês anterior',f:r=>isFinite(r.trend)?`<span class="${r.trend>=0?'up':'down'}">${r.trend>=0?'▲':'▼'} ${PCT(Math.abs(r.trend))}</span>`:'<span class="pill muted">sem horas no mês anterior</span>'});
+  const cols=[{k:'k',h:t('colClient'),f:r=>esc(cn(r.k))},{k:'hours',h:t('colH'),f:r=>barCell(r.hours,maxH,hrs(r.hours))}];
+  if(hasRates()) cols.push({k:'value',h:t('colValue'),f:r=>money(r.value)});
+  cols.push({k:'main',h:t('colMainService'),l:true,f:r=>esc(r.main)},{k:'n',h:t('colPeople'),f:r=>r.n},{k:'days',h:t('colDays'),f:r=>r.days});
+  if(pp) cols.push({k:'trend',h:t('colVsPrev'),f:r=>isFinite(r.trend)?`<span class="${r.trend>=0?'up':'down'}">${r.trend>=0?'▲':'▼'} ${PCT(Math.abs(r.trend))}</span>`:`<span class="pill muted">${t('noPrev')}</span>`});
   sortable('t-client','client',cols,rows,k=>{selClient=k;render()},selClient);
-  document.getElementById('client-foot').textContent = `${total} clientes com horas no período`+(q?` · ${rows.length} encontrados`:'');
+  document.getElementById('client-foot').textContent = t('clientsFoot',{n:total})+(q?t('found',{n:rows.length}):'');
 
   const box=document.getElementById('client-detail');
   if(!selClient){box.innerHTML='';return}
   const all=E.filter(e=>e.client===selClient&&e.kind==='client'), mp=all.filter(inPeriod), S=stats(mp);
-  box.innerHTML=`<div class="card"><div class="detail-head"><h2>${esc(selClient)}</h2><span class="foot">${period==='all'?'Ano inteiro':mLabel(period)}</span></div>
-    <div class="kpis">${kpi('Horas no período',hrs(S.hours),S.days+' dias com trabalho')+kpi('Horas no ano',hrs(sum(all,e=>e.hours)))+kpi('Pessoas envolvidas',new Set(mp.map(e=>e.staff)).size)+(hasRates()?kpi('Valor gerado',money(S.value)):'')}</div></div>
-    <div class="card s6"><h2>Evolução do cliente</h2><p class="hint">Horas por mês</p><div class="chart"><canvas id="ch-cl-evol"></canvas></div></div>
-    <div class="card s6"><h2>Quem trabalha neste cliente</h2><p class="hint">Horas por pessoa no período</p><div class="chart"><canvas id="ch-cl-staff"></canvas></div></div>
-    <div class="card"><h2>Últimos lançamentos</h2><div class="tbl-wrap"><table>${entriesTable(mp.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,25),true)}</table></div></div>`;
+  box.innerHTML=`<div class="card"><div class="detail-head"><h2>${esc(cn(selClient))}</h2><span class="foot">${period==='all'?t('wholeYear'):mLabel(period)}</span></div>
+    <div class="kpis">${kpi(t('kHoursPeriod'),hrs(S.hours),t('daysWork',{n:S.days}))+kpi(t('kHoursYear'),hrs(sum(all,e=>e.hours)))+kpi(t('kPeople'),new Set(mp.map(e=>e.staff)).size)+(hasRates()?kpi(t('kValue'),money(S.value)):'')}</div></div>
+    <div class="card s6"><h2>${t('clientTrend')}</h2><p class="hint">${t('hoursPerMonth')}</p><div class="chart"><canvas id="ch-cl-evol"></canvas></div></div>
+    <div class="card s6"><h2>${t('whoWorks')}</h2><p class="hint">${t('hoursPerPerson')}</p><div class="chart"><canvas id="ch-cl-staff"></canvas></div></div>
+    <div class="card"><h2>${t('lastEntries')}</h2><div class="tbl-wrap"><table>${entriesTable(mp.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,25),true)}</table></div></div>`;
   const pal=palette(), bym=group(all,e=>e.month), st=MONTHS.map(m=>sum(bym.get(m)||[],e=>e.hours));
-  mk('ch-cl-evol',{type:'line',data:{labels:MONTHS.map(mShort),datasets:[{label:'Horas',data:st.map(v=>+v.toFixed(1)),borderColor:pal[0],backgroundColor:pal[0]+'33',fill:true,tension:.3,pointRadius:MONTHS.map(m=>m===period?6:3)}]},
+  mk('ch-cl-evol',{type:'line',data:{labels:MONTHS.map(mShort),datasets:[{label:t('colH'),data:st.map(v=>+v.toFixed(1)),borderColor:pal[0],backgroundColor:pal[0]+'33',fill:true,tension:.3,pointRadius:MONTHS.map(m=>m===period?6:3)}]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+hrs(c.raw)}}},scales:{y:hAxis(),x:{grid:{display:false}}}}});
   hbar('ch-cl-staff',[...group(mp,e=>e.staff)].map(([k,v])=>[k,sum(v,e=>e.hours)]).sort((a,b)=>b[1]-a[1]),pal[1]);
 }
 
 function entriesTable(list,noClient){
-  return '<thead><tr><th>Data</th><th class="l">Pessoa</th>'+(noClient?'':'<th class="l">Cliente</th>')+'<th class="l">Serviço</th><th class="l">Descrição</th><th>Horas</th>'+(hasRates()?'<th>Valor</th>':'')+'</tr></thead><tbody>'+
-    (list.length?list.map(e=>`<tr><td class="mono">${dBR(e.date)}</td><td class="l">${esc(e.staff)}</td>${noClient?'':`<td class="l">${e.kind==='client'?esc(e.client):'<span class="pill muted">Interno</span>'}</td>`}<td class="l">${esc(sv(e.service))}</td><td class="wrap">${esc(e.desc)}</td><td>${NUM1.format(e.hours)}</td>${hasRates()?`<td>${val(e)?GBP2.format(val(e)):'—'}</td>`:''}</tr>`).join(''):'<tr><td colspan="7" class="empty">Nenhum lançamento.</td></tr>')+'</tbody>';
+  return `<thead><tr><th>${t('colDate')}</th><th class="l">${t('colPerson')}</th>`+(noClient?'':`<th class="l">${t('colClient')}</th>`)+`<th class="l">${t('colService')}</th><th class="l">${t('colDesc')}</th><th>${t('colH')}</th>`+(hasRates()?`<th>${t('colValue')}</th>`:'')+'</tr></thead><tbody>'+
+    (list.length?list.map(e=>`<tr><td class="mono">${dBR(e.date)}</td><td class="l">${esc(e.staff)}</td>${noClient?'':`<td class="l">${e.kind==='client'?esc(cn(e.client)):`<span class="pill muted">${t('internal')}</span>`}</td>`}<td class="l">${esc(sv(e.service))}</td><td class="wrap">${esc(e.desc)}</td><td>${NUM1.format(e.hours)}</td>${hasRates()?`<td>${val(e)?GBP2.format(val(e)):'—'}</td>`:''}</tr>`).join(''):`<tr><td colspan="7" class="empty">${t('noEntries')}</td></tr>`)+'</tbody>';
 }
-function fillSelect(id,vals,all){const s=document.getElementById(id),v=s.value;s.innerHTML=`<option value="">${all}</option>`+vals.map(x=>`<option>${esc(x)}</option>`).join('');if(vals.includes(v))s.value=v;}
+function fillSelect(id,vals,all,label){const s=document.getElementById(id),v=s.value;s.innerHTML=`<option value="">${all}</option>`+vals.map(x=>`<option value="${esc(x)}">${esc(label?label(x):x)}</option>`).join('');if(vals.includes(v))s.value=v;}
 function renderEntries(){
   const cur=E.filter(inPeriod);
-  fillSelect('f-staff',[...new Set(cur.map(e=>e.staff))].sort(),'Toda a equipe');
-  fillSelect('f-client',[...new Set(cur.filter(e=>e.kind==='client').map(e=>e.client))].sort((a,b)=>a.localeCompare(b)),'Todos os clientes');
+  fillSelect('f-staff',[...new Set(cur.map(e=>e.staff))].sort(),t('allTeam'));
+  fillSelect('f-client',[...new Set(cur.filter(e=>e.kind==='client').map(e=>e.client))].sort((a,b)=>cn(a).localeCompare(cn(b))),t('allClients'),cn);
   const fs=document.getElementById('f-staff').value, fc=document.getElementById('f-client').value, fk=document.getElementById('f-kind').value, fq=document.getElementById('f-q').value.trim().toLowerCase();
   const list=cur.filter(e=>(!fs||e.staff===fs)&&(!fc||e.client===fc)&&(!fk||e.kind===fk)&&(!fq||e.desc.toLowerCase().includes(fq))).sort((a,b)=>b.date.localeCompare(a.date)||a.staff.localeCompare(b.staff));
   const LIM=400;
   document.getElementById('t-entries').innerHTML=entriesTable(list.slice(0,LIM));
   const S=stats(list);
-  document.getElementById('entries-foot').textContent=`${list.length} lançamentos · ${hrs(S.hours)}`+(hasRates()?` · ${GBP2.format(S.value)}`:'')+(list.length>LIM?` · mostrando os ${LIM} mais recentes`:'');
+  document.getElementById('entries-foot').textContent=t('entriesFoot',{n:list.length,h:hrs(S.hours)})+(hasRates()?` · ${GBP2.format(S.value)}`:'')+(list.length>LIM?t('showingLast',{n:LIM}):'');
 }
 
 function renderRates(){
   const box=document.getElementById('rates');
-  if(box.dataset.built) return;
   const hByS=new Map([...group(E.filter(e=>e.kind==='client'),e=>e.service)].map(([k,v])=>[k,sum(v,e=>e.hours)]));
-  box.innerHTML=CLIENT_SERVICES.slice().sort((a,b)=>(hByS.get(b)||0)-(hByS.get(a)||0)).map((s,i)=>`<label for="rate-${i}"><span>${esc(sv(s))} <span class="foot">${hrs(hByS.get(s))} no ano</span></span><span>£ <input id="rate-${i}" type="number" min="0" step="1" inputmode="decimal" data-s="${esc(s)}" value="${RATES[s]||''}" placeholder="0"></span></label>`).join('');
-  box.dataset.built='1';
+  box.innerHTML=CLIENT_SERVICES.slice().sort((a,b)=>(hByS.get(b)||0)-(hByS.get(a)||0)).map((s,i)=>`<label for="rate-${i}"><span>${esc(sv(s))} <span class="foot">${t('inYear',{h:hrs(hByS.get(s))})}</span></span><span>£ <input id="rate-${i}" type="number" min="0" step="1" inputmode="decimal" data-s="${esc(s)}" value="${RATES[s]||''}" placeholder="0"></span></label>`).join('');
   box.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{ RATES[inp.dataset.s]=parseFloat(inp.value)||0; saveRates(); });
+  const rb=document.getElementById('revenue');
+  rb.innerHTML=MONTHS.map((m,i)=>`<label for="rev-${i}"><span>${mLabel(m)}</span><span>£ <input id="rev-${i}" type="number" min="0" step="1" inputmode="decimal" data-m="${m}" value="${REV[m]||''}" placeholder="0"></span></label>`).join('');
+  rb.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{ REV[inp.dataset.m]=parseFloat(inp.value)||0; const msg=document.getElementById('rev-msg'); try{localStorage.setItem('ts-revenue',JSON.stringify(REV));msg.textContent=t('ratesSaved')}catch(_){msg.textContent=t('ratesNotSaved')} });
 }
-function saveRates(){ const msg=document.getElementById('rates-msg'); try{localStorage.setItem('ts-rates',JSON.stringify(RATES));msg.textContent='Preços salvos neste navegador.'}catch(_){msg.textContent='Este navegador não deixou salvar; os preços valem até fechar a página.'} updateBanner(); }
+function saveRates(){ const msg=document.getElementById('rates-msg'); try{localStorage.setItem('ts-rates',JSON.stringify(RATES));msg.textContent=t('ratesSaved')}catch(_){msg.textContent=t('ratesNotSaved')} updateBanner(); }
 document.getElementById('rates-clear').onclick=()=>{ RATES={}; document.querySelectorAll('#rates input').forEach(i=>i.value=''); saveRates(); };
 
 function renderAlerts(){
   const staff=[...new Set(E.map(e=>e.staff))].sort();
   const has=new Set(E.map(e=>e.staff+'|'+e.month));
   const first=new Map(staff.map(s=>[s,MONTHS.find(m=>has.has(s+'|'+m))]));
-  document.getElementById('coverage').innerHTML='<table class="cover"><thead><tr><th class="l">Pessoa</th>'+MONTHS.map(m=>`<th>${MES3[+m.slice(5)-1]}</th>`).join('')+'</tr></thead><tbody>'+
-    staff.map(s=>`<tr><td class="l name">${esc(s)}</td>`+MONTHS.map(m=>`<td><span class="cv ${has.has(s+'|'+m)?'y':'n'}" title="${esc(s)} · ${mLabel(m)}${has.has(s+'|'+m)?'':' · sem lançamentos'}"></span></td>`).join('')+'</tr>').join('')+'</tbody></table>';
+  document.getElementById('coverage').innerHTML=`<table class="cover"><thead><tr><th class="l">${t('colPerson')}</th>`+MONTHS.map(m=>`<th>${t('months3')[+m.slice(5)-1]}</th>`).join('')+'</tr></thead><tbody>'+
+    staff.map(s=>`<tr><td class="l name">${esc(s)}</td>`+MONTHS.map(m=>`<td><span class="cv ${has.has(s+'|'+m)?'y':'n'}" title="${esc(s)} · ${mLabel(m)}${has.has(s+'|'+m)?'':t('noEntriesTip')}"></span></td>`).join('')+'</tr>').join('')+'</tbody></table>';
   const A=[]; const cur=E.filter(inPeriod);
   const months=period==='all'?MONTHS:[period];
-  for(const m of months) for(const s of staff) if(first.get(s)<m && !has.has(s+'|'+m)) A.push(['bad',`${s}: nenhum lançamento em ${mLabel(m)}`,'A pessoa já lançava horas antes deste mês. Confira se o timesheet está na pasta.']);
-  for(const [k,v] of group(cur,e=>e.staff+'|'+e.date)){ const h=sum(v,e=>e.hours); if(h>10){const [s,d]=k.split('|');A.push(['warn',`${s} lançou ${NUM1.format(h)} h em ${dBR(d)}`,'Confira se não há linha duplicada ou horário digitado errado.']);} }
-  for(const n of (D.notes||[])) if(period==='all'||!n.month||n.month===period) A.push([n.level||'muted',n.title,n.detail||'']);
-  document.getElementById('alerts').innerHTML=A.length?A.map(a=>`<div class="alert ${a[0]}"><span class="pill ${a[0]}">${a[0]==='bad'?'Falta':a[0]==='warn'?'Conferir':'Nota'}</span><span class="t">${esc(a[1])}</span><span class="d">${esc(a[2])}</span></div>`).join(''):'<p class="empty">Nada para conferir neste período.</p>';
+  for(const m of months) for(const s of staff) if(first.get(s)<m && !has.has(s+'|'+m)) A.push(['bad',t('aMissingT',{s,m:mLabel(m)}),t('aMissingD')]);
+  for(const [k,v] of group(cur,e=>e.staff+'|'+e.date)){ const h=sum(v,e=>e.hours); if(h>10){const [s,d]=k.split('|');A.push(['warn',t('aLongT',{s,h:hrs(h),d:dBR(d)}),t('aLongD')]);} }
+  for(const n of (D.notes||[])) if(period==='all'||!n.month||n.month===period) A.push([n.level||'muted',(LANG==='en'&&n.title_en)||n.title,(LANG==='en'&&n.detail_en)||n.detail||'']);
+  const P={bad:t('pMissing'),warn:t('pCheck'),muted:t('pNote')};
+  document.getElementById('alerts').innerHTML=A.length?A.map(a=>`<div class="alert ${a[0]}"><span class="pill ${a[0]}">${P[a[0]]}</span><span class="t">${esc(a[1])}</span><span class="d">${esc(a[2])}</span></div>`).join(''):`<p class="empty">${t('nothing')}</p>`;
   const n=A.filter(a=>a[0]!=='muted').length; const c=document.getElementById('alert-count'); c.textContent=n||''; c.hidden=!n;
 }
 
-function updateBanner(){
-  document.getElementById('banner').innerHTML = hasRates()
-    ? `<b>Dados reais</b> dos timesheets no Dropbox, lidos em ${esc(D.generated)}. Valores em £ calculados com os preços da aba <a href="#precos">Preços</a>.`
-    : `<b>Dados reais</b> dos timesheets no Dropbox, lidos em ${esc(D.generated)}. Os timesheets não têm preço por hora, então o painel mostra horas. Para ver valores em £, preencha a aba <a href="#precos">Preços</a>.`;
+function updateBanner(){ document.getElementById('banner').innerHTML = t(hasRates()?'bannerMoney':'bannerHours',{d:esc(D.generated)}); }
+function fillPeriod(){ const s=document.getElementById('period'); s.innerHTML=MONTHS.slice().reverse().map(m=>`<option value="${m}">${mLabel(m)}</option>`).join('')+`<option value="all">${t('wholeYear')}</option>`; s.value=period; }
+function applyLang(){
+  document.documentElement.lang = LANG==='en'?'en':'pt-BR';
+  document.title = t('appTitle');
+  NUM1 = new Intl.NumberFormat(loc(),{maximumFractionDigits:1});
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh);el.setAttribute('aria-label',t(el.dataset.i18nPh))});
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===LANG)));
+  document.getElementById('src-label').textContent=t('srcLabel',{p:new Set(E.map(e=>e.staff)).size,n:E.length.toLocaleString(loc()),a:mShort(MONTHS[0]),b:mShort(MONTHS[MONTHS.length-1])});
+  updateBanner(); fillPeriod();
 }
-function fillPeriod(){ const s=document.getElementById('period'); s.innerHTML=MONTHS.slice().reverse().map(m=>`<option value="${m}">${mLabel(m)}</option>`).join('')+'<option value="all">Ano inteiro</option>'; s.value=period; }
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{ LANG=b.dataset.lang; try{localStorage.setItem('ts-lang',LANG)}catch(_){} applyLang(); render(); });
+
 const VIEWS=['geral','funcionarias','clientes','lancamentos','precos','conferencia'];
 const currentView=()=>{const h=location.hash.slice(1);return VIEWS.includes(h)?h:'geral'};
 function render(){
@@ -439,15 +558,14 @@ function render(){
   renderAlerts();
   ({geral:renderGeral,funcionarias:renderStaff,clientes:renderClients,lancamentos:renderEntries,precos:renderRates,conferencia:()=>{}})[v]();
 }
-document.getElementById('src-label').textContent=`${new Set(E.map(e=>e.staff)).size} pessoas · ${E.length} lançamentos · ${mShort(MONTHS[0])} a ${mShort(MONTHS[MONTHS.length-1])}`;
 document.getElementById('period').onchange=e=>{period=e.target.value;render()};
 ['f-staff','f-client','f-kind'].forEach(id=>document.getElementById(id).onchange=renderEntries);
 document.getElementById('f-q').oninput=renderEntries;
 document.getElementById('client-q').oninput=renderClients;
 window.addEventListener('hashchange',render);
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
-new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-updateBanner(); fillPeriod();
+new MutationObserver(m=>{ if(m.some(x=>x.attributeName==='data-theme')) render(); }).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+applyLang();
 if(!location.hash) history.replaceState(null,'','#geral');
 render();
 })();

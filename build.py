@@ -81,7 +81,7 @@ def main(src: str, out: str, aliases_path: str | None = None, notes_path: str | 
     data = {
         "generated": datetime.now().strftime("%d/%m/%Y"),
         "staff": staff, "clients": clients, "services": services,
-        "rates": {}, "notes": notes,
+        "rates": {}, "revenue": {}, "notes": notes,
         "rows": [[si[r["staff"]], r["date"], ci[r["client"]], vi[r["service"]], r["hours"], r["kind"], r["desc"]]
                  for r in sorted(rows, key=lambda r: (r["date"], r["staff"]))],
     }
